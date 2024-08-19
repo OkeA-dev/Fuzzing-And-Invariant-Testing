@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.7;
+
 import "../src/ERC20.sol";
 import "forge-std/Test.sol";
-import "./Mocks/MockERC20.sol";
-contract ERC20Test is Test {
+import {MockERC20} from "./Mocks/MockERC20.sol";
+import {TestUtils} from "./Utils/TestUtils.sol";
+
+contract ERC20Test is Test, TestUtils {
     MockERC20 internal _token;
+
     function setUp() public virtual {
         _token = new MockERC20("SPHERE", "SPH", 18);
     }
@@ -31,7 +35,6 @@ contract ERC20Test is Test {
 
         assertEq(_token.totalSupply(), amount0_ - amount1_);
         assertEq(_token.balanceOf(account_), amount0_ - amount1_);
-
     }
 
     function testFuzz_approve(address account_, uint256 amount_) public {
@@ -39,5 +42,16 @@ contract ERC20Test is Test {
         assertEq(_token.allowance(address(this), account_), amount_);
     }
 
-    function testFuzz_IncreaseApprove()
+    function testFuzz_IncreaseAllowance(address account_, uint256 initialAmount_, uint256 addedAmount_) public {
+        initialAmount_ = constrictToRange(initialAmount_, 0, type(uint256).max / 2);
+        addedAmount_ = constrictToRange(addedAmount_, 0, type(uint256).max / 2);
+        _token.approve(account_, initialAmount_);
+
+        assertEq(_token.allowance(address(this), account_), initialAmount_);
+        
+        assertTrue(_token.increaseAllowance(account_, addedAmount_));
+
+        assertEq(_token.allowance(address(this), account_), initialAmount_ + addedAmount_);
+
+    }
 }
