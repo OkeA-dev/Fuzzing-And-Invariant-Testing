@@ -33,4 +33,11 @@ contract ERC20Test is Test {
         assertEq(_token.balanceOf(account_), amount0_ - amount1_);
 
     }
+
+    function testFuzz_approve(address account_, uint256 amount_) public {
+        assertTrue(_token.approve(account_, amount_));
+        assertEq(_token.allowance(address(this), account_), amount_);
+    }
+
+    function testFuzz_IncreaseApprove()
 }
