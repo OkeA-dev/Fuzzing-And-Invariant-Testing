@@ -143,7 +143,7 @@ contract ERC20 is IERC20 {
         return true;
     }
 
-     function mint(address recipient_, uint256 amount_) external {
+     function mint(address recipient_, uint256 amount_) external virtual {
         _mint(recipient_, amount_);
     }
 
