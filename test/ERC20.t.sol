@@ -16,4 +16,21 @@ contract ERC20Test is Test {
         assertEq(mockToken.symbol(), symbol_);
         assertEq(mockToken.decimals(), decimals_);
     }
+
+    function testFuzz_mint(address recipient_, uint256 amount_) public {
+        _token.mint(recipient_, amount_);
+
+        assertEq(_token.totalSupply(), amount_);
+        assertEq(_token.balanceOf(recipient_), amount_);
+    }
+
+    function testFuzz_burn(address account_, uint256 amount0_, uint256 amount1_) public {
+        if (amount1_ > amount0_) return;
+        _token.mint(account_, amount0_);
+        _token.burn(account_, amount1_);
+
+        assertEq(_token.totalSupply(), amount0_ - amount1_);
+        assertEq(_token.balanceOf(account_), amount0_ - amount1_);
+
+    }
 }
