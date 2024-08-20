@@ -54,4 +54,37 @@ contract ERC20Test is Test, TestUtils {
         assertEq(_token.allowance(address(this), account_), initialAmount_ + addedAmount_);
 
     }
+
+    function invariant_metadataIsConstant() public view {
+        assertEq(_token.name(), "SPHERE");
+        assertEq(_token.symbol(), "SPH");
+        assertEq(_token.decimals(), 18);
+    }
+
+    function testInvariant_mintingAffectsTotalSupplyAndBalance(address to_, uint256 amount_) public {
+        vm.assume(to_ != address(0));
+
+        uint256 preSupply = _token.totalSupply();
+
+        _token.mint(to_, amount_);
+
+        uint256 postSupply = _token.totalSupply();
+        uint256 toBalance = _token.balanceOf(to_);
+
+        assertEq(
+            postSupply,
+            preSupply + amount_,
+            "Total supply did not increase correctly after minting"
+        );
+
+        assertEq(
+            toBalance,
+            amount_,
+            "Recipient balance incorrect after minting"
+        );
+
+
+    }
+
+
 }
