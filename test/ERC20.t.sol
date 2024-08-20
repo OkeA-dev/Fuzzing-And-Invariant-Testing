@@ -86,5 +86,25 @@ contract ERC20Test is Test, TestUtils {
 
     }
 
+    function testInvariant_transferIntegrity(address from_, address to_, uint256 amount0_, uint256 amount1_) public {
+        vm.assume(to_ != address(0));
+        vm.assume(from_ != address(0));
+        if (amount1_ > amount0_) return;
+
+        _token.mint(from_, amount0_);
+        uint256 totalSupply = _token.totalSupply();
+        uint256 ownerInitialBalance = _token.balanceOf(from_);
+        uint256 recipientInitialBalance = _token.balanceOf(to_);
+
+        vm.prank(from_);
+        _token.transfer(to_, amount1_);
+
+        assertEq(_token.balanceOf(from_), ownerInitialBalance - amount1_);
+        assertEq(_token.balanceOf(to_), recipientInitialBalance + amount1_);
+        assertEq(totalSupply, _token.totalSupply());
+
+
+    }
+
 
 }
